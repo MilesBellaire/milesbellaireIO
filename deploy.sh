@@ -28,7 +28,7 @@ echo "$(date): Starting deployment..."
 # This pulls any changes you made to the docker-compose.yml itself
 echo "Updating orchestration files..."
 cd $REPO_DIR
-git pull origin main
+git reset --hard HEAD; git pull origin main; chmod +x deploy.sh
 
 # 6. STEP TWO: Pull the new application images
 echo "Pulling latest images from GHCR..."
