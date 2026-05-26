@@ -1,0 +1,14 @@
+services:
+  frontend:
+    image: local-frontend:dev
+    build:
+      context: ../milesbellaireFE
+      dockerfile: Dockerfile
+
+  backend:
+    image: local-backend:dev
+    build:
+      context: ../milesbellaireBE
+      dockerfile: dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
