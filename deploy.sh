@@ -41,8 +41,9 @@ echo "Applying changes to containers..."
 if [ "$ENABLE_TUNNEL" = "true" ]; then
     docker compose -f $COMPOSE_FILE --profile tunnel up -d --remove-orphans
 else
-    # Bring down tunnel profile services first, then start the rest
-    docker compose -f $COMPOSE_FILE --profile tunnel down
+    # Stop and remove only the cloudflared container, leave networks intact
+    docker compose -f $COMPOSE_FILE --profile tunnel stop cloudflared
+    docker compose -f $COMPOSE_FILE --profile tunnel rm -f cloudflared
     docker compose -f $COMPOSE_FILE up -d --remove-orphans
 fi
 
