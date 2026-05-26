@@ -3,6 +3,7 @@
 # 1. Define the path to your orchestration repository folder
 REPO_DIR="/home/deploy/milesbellaireIO"
 COMPOSE_FILE="$REPO_DIR/docker-compose.yml"
+PROD_COMPOSE_FILE="$REPO_DIR/docker-compose.prod.yml"
 
 # 2. Load .env variables into this script's environment
 if [ -f "$REPO_DIR/.env" ]; then
@@ -39,13 +40,13 @@ docker pull $CLOUDFLARE
 # We use the -f flag to point to the updated file we just pulled
 echo "Applying changes to containers..."
 if [ "$ENABLE_TUNNEL" = "true" ]; then
-    docker compose -f $COMPOSE_FILE up -d --remove-orphans
-    docker compose -f $COMPOSE_FILE --profile tunnel up -d --remove-orphans
+    docker compose -f $COMPOSE_FILE -f $PROD_COMPOSE_FILE up -d --remove-orphans
+    docker compose -f $COMPOSE_FILE -f $PROD_COMPOSE_FILE --profile tunnel up -d --remove-orphans
 else
     # Stop and remove only the cloudflared container, leave networks intact
-    docker compose -f $COMPOSE_FILE --profile tunnel stop cloudflared
-    docker compose -f $COMPOSE_FILE --profile tunnel rm -f cloudflared
-    docker compose -f $COMPOSE_FILE up -d --remove-orphans
+    docker compose -f $COMPOSE_FILE -f $PROD_COMPOSE_FILE --profile tunnel stop cloudflared
+    docker compose -f $COMPOSE_FILE -f $PROD_COMPOSE_FILE --profile tunnel rm -f cloudflared
+    docker compose -f $COMPOSE_FILE -f $PROD_COMPOSE_FILE up -d --remove-orphans
 fi
 
 # 8. Cleanup
