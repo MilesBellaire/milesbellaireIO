@@ -39,6 +39,7 @@ docker pull $CLOUDFLARE
 # We use the -f flag to point to the updated file we just pulled
 echo "Applying changes to containers..."
 if [ "$ENABLE_TUNNEL" = "true" ]; then
+    docker compose -f $COMPOSE_FILE up -d --remove-orphans
     docker compose -f $COMPOSE_FILE --profile tunnel up -d --remove-orphans
 else
     # Stop and remove only the cloudflared container, leave networks intact
