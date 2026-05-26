@@ -17,7 +17,6 @@ CLOUDFLARE="cloudflare/cloudflared:latest"
 # 4. Check if we should enable the tunnel profile
 if [ "$ENABLE_TUNNEL" = "true" ]; then
     echo "Tunneling enabled. Activating 'tunnel' profile..."
-    PROFILE_FLAGS="--profile tunnel"
 else
     echo "Tunneling disabled. Running in standard mode..."
 fi
@@ -39,7 +38,13 @@ docker pull $CLOUDFLARE
 # 7. STEP THREE: Apply the changes
 # We use the -f flag to point to the updated file we just pulled
 echo "Applying changes to containers..."
-docker compose -f $COMPOSE_FILE up -d --remove-orphans
+if [ "$ENABLE_TUNNEL" = "true" ]; then
+    docker compose -f $COMPOSE_FILE --profile tunnel up -d --remove-orphans
+else
+    # Bring down tunnel profile services first, then start the rest
+    docker compose -f $COMPOSE_FILE --profile tunnel down
+    docker compose -f $COMPOSE_FILE up -d --remove-orphans
+fi
 
 # 8. Cleanup
 echo "Cleaning up old images..."
